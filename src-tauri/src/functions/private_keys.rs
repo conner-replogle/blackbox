@@ -11,7 +11,10 @@ use diesel::r2d2::ConnectionManager;
 use crate::Database;
 
 #[tauri::command]
-pub fn get_private_keys(state: State<'_, Database>) -> Vec<PrivateKey> {
+pub fn get_private_keys(state: State<'_, Database>) -> Result<Vec<PrivateKey>,String> {
+    let Ok(Some(state)) = state.read().map(|a| a.clone()) else{
+        return Err("Error reading state".to_string());
+    };
     use crate::private_keys::dsl::private_keys;
     println!("Gettings private key ");
   
@@ -20,13 +23,15 @@ pub fn get_private_keys(state: State<'_, Database>) -> Vec<PrivateKey> {
         .select(PrivateKey::as_select())
         .load(&mut state.get().unwrap())
         .expect("Error loading private_keys");
-    return results;
+    return Ok(results);
 }
 
 
 #[tauri::command]
 pub fn add_private_key(state: State<'_, Database>,nickname: &str,private_key: &str) -> Result<String, String> {
-
+    let Ok(Some(state)) = state.read().map(|a| a.clone()) else{
+        return Err("Error reading state".to_string());
+    };
     println!("Adding private key {}", nickname);
     let key = match SignedSecretKey::from_string(private_key){
         Ok(key) => key.0,

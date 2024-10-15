@@ -11,7 +11,10 @@ use diesel::r2d2::ConnectionManager;
 use crate::Database;
 
 #[tauri::command]
-pub fn get_public_keys(state: State<'_, Database>) -> Vec<PublicKey> {
+pub fn get_public_keys(state: State<'_, Database>) -> Result<Vec<PublicKey>,String> {
+    let Ok(Some(state)) = state.read().map(|a| a.clone()) else{
+        return Err("Error reading state".to_string());
+    };
     use crate::schema::public_keys::dsl::public_keys;
     println!("Getting public keys ");
   
@@ -20,12 +23,14 @@ pub fn get_public_keys(state: State<'_, Database>) -> Vec<PublicKey> {
         .select(PublicKey::as_select())
         .load(&mut state.get().unwrap())
         .expect("Error loading public_keys");
-    return results;
+    return Ok(results);
 }
 
 #[tauri::command]
 pub fn add_public_key(state: State<'_, Database>,nickname: &str,public_key: &str) -> Result<String, String> {
-
+    let Ok(Some(state)) = state.read().map(|a| a.clone()) else{
+        return Err("Error reading state".to_string());
+    };
     println!("Adding public key {}", nickname);
     let key = match SignedPublicKey::from_string(public_key){
         Ok(key) => key.0,

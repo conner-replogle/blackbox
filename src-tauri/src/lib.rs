@@ -6,17 +6,18 @@ use pgp::ser::Serialize;
 use pgp::{message, Signature};
 use pgp::{ types::PublicKeyTrait as _, Deserializable, Message, SignedPublicKey, SignedSecretKey};
 use schema::private_keys;
-use tauri::Manager;
+use tauri::{AppHandle, Emitter, Manager};
+use std::sync::{Arc, RwLock};
 use std::{env, str::from_utf8};
 use tauri::State;
 use diesel::r2d2::ConnectionManager;
 pub mod models;
 pub mod schema;
 mod functions;
-pub type Database = Pool<ConnectionManager<SqliteConnection>>;
+pub type Database = Arc<RwLock<Option<Pool<ConnectionManager<SqliteConnection>>>>>;
 use functions::private_keys::*;
 use functions::public_keys::*;
-pub fn establish_connection() -> Database {
+pub fn establish_connection(password: &str) -> Pool<ConnectionManager<SqliteConnection>> {
     dotenv().ok();
 
     let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
@@ -24,14 +25,16 @@ pub fn establish_connection() -> Database {
     let pool = Pool::builder()
         .build(ConnectionManager::<SqliteConnection>::new(database_url))
         .unwrap();
-    let  conn = pool.get().unwrap();
     
 
-    return pool;
+    return pool 
 }
 
 #[tauri::command]
 fn decrypt_message(state: State<'_, Database>,pkey_id: &str,message: &str,pass_key:&str,signer: Option<&str>) -> Result<String, String> {
+    let Ok(Some(state)) = state.read().map(|a| a.clone()) else{
+        return Err("Error reading state".to_string());
+    };
     use crate::private_keys::dsl::*;
     let result = private_keys
         .filter(key_id.eq(pkey_id))
@@ -143,22 +146,54 @@ fn decrypt_message(state: State<'_, Database>,pkey_id: &str,message: &str,pass_k
     return Ok(text);
 }
 
+#[derive(Clone, serde::Serialize)]
+struct LockChange {
+  unlocked: bool,
+}
+#[tauri::command]
+fn check_auth(app: AppHandle,state: State<'_, Database>) -> Result<bool,String> {
+    let unlocked = state.read().unwrap().is_some() ;
+    println!("Checking auth: {}",unlocked);
+
+
+    return Ok(unlocked);
+
+}
+
+#[tauri::command]
+fn unlock(state: State<'_, Database>,app: tauri::AppHandle, password: &str) -> Result<bool, String> {
+    println!("Unlocking");
+
+    state.write().map(|mut a| a.replace(establish_connection(password))).unwrap();
+    Ok(true)
+}
+
+#[tauri::command]
+fn lock(state: State<'_, Database>,app: tauri::AppHandle) -> Result<(), String> {
+    println!("Locking");
+
+    state.write().map(|mut a| a.take()).unwrap();
+
+    Ok(())
+}
+
 
 
 
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    let connection = establish_connection();
 
 
     tauri::Builder::default()
         .setup(|app| {
-            app.manage(connection);
+            let main_window = app.get_webview_window("main").unwrap();
+            main_window.eval(&format!("window.location.href= '/login';")).unwrap();
+            app.manage(Arc::new(RwLock::new(None)) as Database);
             Ok(())
         })
         .plugin(tauri_plugin_shell::init())
-        .invoke_handler(tauri::generate_handler![add_private_key,get_private_keys,decrypt_message,add_public_key,get_public_keys])
+        .invoke_handler(tauri::generate_handler![add_private_key,get_private_keys,decrypt_message,add_public_key,get_public_keys,check_auth,unlock,lock])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

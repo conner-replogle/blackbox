@@ -33,17 +33,6 @@
 
 <div class="container">
 
-
-
-
-  {#if loading}
-    <p>Loading...</p>
-  {:else if error}
-    <p>Error: {error}</p>
-  {:else}
-
-
- 
     <div class="flex flex-col p-5">
       {#each data as key}
      
@@ -65,7 +54,5 @@
         
       {/each}
     </div>
-  {/if}
-
 </div>
 
