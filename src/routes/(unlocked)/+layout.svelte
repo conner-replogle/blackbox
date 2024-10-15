@@ -10,7 +10,7 @@
         let auth = await invoke('check_auth')
         if (!auth){
             console.log("Not authenticated");
-            goto("/login");
+            goto("/");
 
 
         }
@@ -23,7 +23,7 @@
 <div class="flex flex-row h-screen w-screen ">
     <div class="w-[250px] border-r-2 border-primary bg-background p-3 items-center  h-screen flex flex-col justify-between">
         <div>
-        <a href="/"><h1 class="text-primary font-bold text-4xl">BlackBox</h1></a>
+        <a href="/dash"><h1 class="text-primary font-bold text-4xl">BlackBox</h1></a>
         <Separator class="my-2"/>
 
         <nav class="flex flex-col pl-2 gap-2">
@@ -40,7 +40,7 @@
         <div class="w-full">
         <Separator class="mb-2 "/>
 
-        <Button class="w-full" on:click={async()=> {await invoke("lock");goto("/login");}}>
+        <Button class="w-full" on:click={async()=> {await invoke("lock");goto("/");}}>
             Lock
         </Button>
         </div>

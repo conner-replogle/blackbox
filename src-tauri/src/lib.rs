@@ -13,6 +13,7 @@ use rand::rngs::ThreadRng;
 use schema::private_keys;
 use tauri::async_runtime::spawn_blocking;
 use tauri::{AppHandle, Emitter, Manager};
+use std::path::{Path, PathBuf};
 use std::sync::{Arc, RwLock};
 use std::{env, str::from_utf8};
 use tauri::State;
@@ -51,15 +52,21 @@ impl CustomizeConnection<SqliteConnection, diesel::r2d2::Error> for EncryptedCus
 
 
 
-pub fn establish_connection(password: &str) -> Result<Pool<ConnectionManager<SqliteConnection>>,diesel::r2d2::Error> {
+pub fn establish_connection(password: &str,path:PathBuf) -> Result<Pool<ConnectionManager<SqliteConnection>>,diesel::r2d2::Error> {
     dotenv().ok();
 
-    let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
+    if !path.exists(){
+        println!("Creating directory");
+        std::fs::create_dir_all(path.as_path()).unwrap();
 
+    }
+
+    let db_path = path.join("blackbox.db");
+    println!("Connecting to {}", db_path.as_path().to_str().unwrap());
     let pool = match Pool::builder()
         .connection_customizer(Box::new(EncryptedCustomizer{password: password.to_string()}))
         .max_size(1)
-        .build(ConnectionManager::<SqliteConnection>::new(database_url)){
+        .build(ConnectionManager::<SqliteConnection>::new(db_path.as_path().to_str().unwrap())){
             Ok(pool) => pool,
             Err(err) => {
                 println!("Error creating pool: {:?}",err);
@@ -294,9 +301,10 @@ fn check_auth(app: AppHandle,state: State<'_, Database>) -> Result<bool,String> 
 #[tauri::command]
 async fn unlock(state: State<'_, Database>,app: tauri::AppHandle, password: String) -> Result<bool, String> {
     println!("Unlocking");
+
     //attempting not to block thread maybe just async function does this but idc I already wrote this
     let a = spawn_blocking::<_,Result<Pool<ConnectionManager<SqliteConnection>>,String>>(move ||{
-        let pool = establish_connection(&password).map_err(|a| a.to_string())?;
+        let pool = establish_connection(&password,app.path().app_data_dir().unwrap()).map_err(|a| a.to_string())?;
         return Ok(pool);
         
     });
@@ -327,8 +335,9 @@ pub fn run() {
 
     tauri::Builder::default()
         .setup(|app| {
+            
             let main_window = app.get_webview_window("main").unwrap();
-            main_window.eval(&format!("window.location.href= '/login';")).unwrap();
+            main_window.eval(&format!("window.location.href= '/';")).unwrap();
             app.manage(Arc::new(RwLock::new(None)) as Database);
             Ok(())
         })

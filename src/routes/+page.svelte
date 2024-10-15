@@ -14,8 +14,8 @@
         try{
             await invoke('unlock', {password});
 
-            console.log("REdirecting to /");
-            goto("/");
+            console.log("REdirecting to /dash");
+            goto("/dash");
         }catch(e){
             console.error(e);
             toast.error("Error unlocking incorrect password or other");
