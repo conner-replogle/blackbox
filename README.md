@@ -17,7 +17,10 @@ As of right now just clone the repo and run `pnpm install` then run the dev comm
 ## Development TODO
 - Create Error type for project
 - Make all db functions seperated into folder
-- encrypting messages
+- create standards
+- ensure standards are met
+- delete keys
+- generate keys
 
 
 ## Potential Ideas
