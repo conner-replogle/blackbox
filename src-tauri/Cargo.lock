@@ -218,6 +218,7 @@ dependencies = [
  "hex",
  "libsqlite3-sys",
  "pgp",
+ "rand 0.8.5",
  "serde",
  "serde_json",
  "tauri",

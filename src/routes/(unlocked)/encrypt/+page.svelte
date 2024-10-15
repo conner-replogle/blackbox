@@ -26,12 +26,13 @@
     let encrypted_message = '';
     let selected_priv_key = "";
     let selected_sign_key: string|undefined = undefined;
-   
+    let passKey = '';
     async function decode() {
         try {
             let options = {
                 pkeyId: selected_priv_key,
                 message,
+                passKey,
                 signer:selected_sign_key
             };
             console.log(options);
@@ -80,6 +81,6 @@
     </div>
     <Textarea class="w-full h-full" bind:value={message} placeholder="Paste Message Here" />
     <Button on:click={() => decode()}>Encrypt</Button>
-    <Textarea class="w-full h-full pointer-events-none" disabled bind:value={encrypted_message} placeholder="Decrypted Message" />
+    <Textarea class="w-full h-full " disabled bind:value={encrypted_message} placeholder="Decrypted Message" />
 </div>
 
