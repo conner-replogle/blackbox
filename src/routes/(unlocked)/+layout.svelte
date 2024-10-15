@@ -34,7 +34,6 @@
             <a href="/contacts"><h2 class="text-primary text-sm">Contact Book</h2></a>
 
             <a href="/identities"><h2 class="text-primary text-sm">Identities</h2></a>
-      
         </nav>
         </div>
         <div class="w-full">

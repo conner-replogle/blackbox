@@ -5,15 +5,25 @@
 	import Input from "@/components/ui/input/input.svelte";
 	import Label from "@/components/ui/label/label.svelte";
 	import { invoke } from "@tauri-apps/api/core";
+    import { toast } from "svelte-sonner";
 
     let password = '';
+    let loading=false
     async function unlock(){
-        let outcome = await invoke('unlock', {password});
-        if(outcome){
+        loading = true;
+        try{
+            await invoke('unlock', {password});
+
             console.log("REdirecting to /");
             goto("/");
+        }catch(e){
+            console.error(e);
+            toast.error("Error unlocking incorrect password or other");
+        }finally{
+            loading = false;
         }
-    }
+
+     }
 </script>
 
 <div class="flex flex-col w-full h-full justify-center items-center">
@@ -31,7 +41,10 @@
             </div>
         </Card.Content>
         <Card.Footer class="gap-2">
-            <Button on:click={unlock}>Unlock</Button>
+            <Button disabled={loading} on:click={unlock}>
+
+                {loading ? "Unlocking..." : "Unlock"}
+            </Button>
             <Button href="/forgot-password">Forgot Password</Button>
         </Card.Footer>
 

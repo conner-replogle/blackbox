@@ -1,3 +1,4 @@
+use diesel::sqlite::Sqlite;
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 use diesel::{connection::SimpleConnection, prelude::*, r2d2::Pool};
 use dotenvy::dotenv;
@@ -6,28 +7,69 @@ use pgp::ser::Serialize;
 use pgp::{message, Signature};
 use pgp::{ types::PublicKeyTrait as _, Deserializable, Message, SignedPublicKey, SignedSecretKey};
 use schema::private_keys;
+use tauri::async_runtime::spawn_blocking;
 use tauri::{AppHandle, Emitter, Manager};
 use std::sync::{Arc, RwLock};
 use std::{env, str::from_utf8};
 use tauri::State;
-use diesel::r2d2::ConnectionManager;
+use diesel::r2d2::{ConnectionManager, CustomizeConnection};
 pub mod models;
 pub mod schema;
 mod functions;
 pub type Database = Arc<RwLock<Option<Pool<ConnectionManager<SqliteConnection>>>>>;
 use functions::private_keys::*;
 use functions::public_keys::*;
-pub fn establish_connection(password: &str) -> Pool<ConnectionManager<SqliteConnection>> {
+use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
+const MIGRATIONS: EmbeddedMigrations = embed_migrations!("migrations/");
+
+#[derive(Clone,Debug)]
+pub struct EncryptedCustomizer{
+    password: String
+}
+
+impl CustomizeConnection<SqliteConnection, diesel::r2d2::Error> for EncryptedCustomizer{
+    fn on_acquire(&self, conn: &mut SqliteConnection) -> Result<(), diesel::r2d2::Error> {
+        println!("Acquiring connection");
+        conn.batch_execute(&format!("PRAGMA key='{}'",self.password)).map_err(|a| diesel::r2d2::Error::QueryError(a))?;
+        conn.batch_execute("
+            PRAGMA busy_timeout = 10;
+            PRAGMA journal_mode = WAL;
+            PRAGMA synchronous = NORMAL;
+            PRAGMA wal_autocheckpoint = 1000;
+            PRAGMA wal_checkpoint(TRUNCATE);
+            PRAGMA foreign_keys = ON;
+        ").map_err(|a| diesel::r2d2::Error::QueryError(a))?;
+        conn.run_pending_migrations(MIGRATIONS).unwrap();
+ 
+        Ok(())
+    }
+}
+
+
+
+pub fn establish_connection(password: &str) -> Result<Pool<ConnectionManager<SqliteConnection>>,diesel::r2d2::Error> {
     dotenv().ok();
 
     let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
 
-    let pool = Pool::builder()
-        .build(ConnectionManager::<SqliteConnection>::new(database_url))
-        .unwrap();
+    let pool = match Pool::builder()
+        .connection_customizer(Box::new(EncryptedCustomizer{password: password.to_string()}))
+        .max_size(1)
+        .build(ConnectionManager::<SqliteConnection>::new(database_url)){
+            Ok(pool) => pool,
+            Err(err) => {
+                println!("Error creating pool: {:?}",err);
+                return Err(diesel::r2d2::Error::ConnectionError(ConnectionError::BadConnection("Incorrect Password or connection issue".to_string())))
+            }
+        };
+
+        
+        
+    
+    
     
 
-    return pool 
+    return Ok(pool);
 }
 
 #[tauri::command]
@@ -161,10 +203,19 @@ fn check_auth(app: AppHandle,state: State<'_, Database>) -> Result<bool,String> 
 }
 
 #[tauri::command]
-fn unlock(state: State<'_, Database>,app: tauri::AppHandle, password: &str) -> Result<bool, String> {
+async fn unlock(state: State<'_, Database>,app: tauri::AppHandle, password: String) -> Result<bool, String> {
     println!("Unlocking");
+    //attempting not to block thread maybe just async function does this but idc I already wrote this
+    let a = spawn_blocking::<_,Result<Pool<ConnectionManager<SqliteConnection>>,String>>(move ||{
+        let pool = establish_connection(&password).map_err(|a| a.to_string())?;
+        return Ok(pool);
+        
+    });
+    let pool = a.await.unwrap()?;
 
-    state.write().map(|mut a| a.replace(establish_connection(password))).unwrap();
+    state.write().map(|mut a| a.replace(pool)).unwrap();
+
+    
     Ok(true)
 }
 

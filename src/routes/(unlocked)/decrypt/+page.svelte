@@ -45,9 +45,9 @@
             toast.error(`Error decrypting message: ${err}`); 
         } 
     }
-  </script>
-  
-  <div class="p-5 flex flex-col gap-2 w-full h-full">
+</script>
+
+<div class="p-5 flex flex-col gap-2 w-full h-full">
     <div class="flex flex-row gap-2">
         <Select.Root selected={{value:"",label:""}} onSelectedChange={
             (selected) => {
@@ -83,7 +83,6 @@
     <Textarea class="w-full h-full" bind:value={message} placeholder="Paste Message Here" />
     <Input class="w-full" bind:value={password} placeholder="Password" />
     <Button on:click={() => decode()}>Decrypt</Button>
-    <Textarea class="w-full h-full" disabled bind:value={decrypted_message} placeholder="Decrypted Message" />
-  </div>
-  
-  
+    <Textarea class="w-full h-full pointer-events-none" disabled bind:value={decrypted_message} placeholder="Decrypted Message" />
+</div>
+
