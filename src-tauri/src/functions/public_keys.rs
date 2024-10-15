@@ -1,14 +1,24 @@
 use diesel::{connection::SimpleConnection, prelude::*, r2d2::Pool};
 use dotenvy::dotenv;
+use crate::db::Database;
 use crate::models::{NewPrivateKey, NewPublicKey, PrivateKey, PublicKey};
+use pgp::crypto::aead::AeadAlgorithm;
+use pgp::crypto::hash::HashAlgorithm;
+use pgp::crypto::sym::SymmetricKeyAlgorithm;
+use pgp::ser::Serialize;
+use pgp::types::{CompressionAlgorithm, SecretKeyTrait, SignatureBytes};
+use pgp::{message, ArmorOptions, Signature};
 use pgp::{ types::PublicKeyTrait as _, Deserializable, Message, SignedPublicKey, SignedSecretKey};
+use rand::rngs::ThreadRng;
 use crate::schema::private_keys;
-use tauri::Manager;
+use tauri::async_runtime::spawn_blocking;
+use tauri::{AppHandle, Emitter, Manager};
+use std::path::{Path, PathBuf};
+use std::sync::{Arc, RwLock};
 use std::{env, str::from_utf8};
 use tauri::State;
-use diesel::r2d2::ConnectionManager;
+use diesel::r2d2::{ConnectionManager, CustomizeConnection};
 
-use crate::Database;
 
 #[tauri::command]
 pub fn get_public_keys(state: State<'_, Database>) -> Result<Vec<PublicKey>,String> {
@@ -16,7 +26,7 @@ pub fn get_public_keys(state: State<'_, Database>) -> Result<Vec<PublicKey>,Stri
         return Err("Error reading state".to_string());
     };
     use crate::schema::public_keys::dsl::public_keys;
-    println!("Getting public keys ");
+    tracing::debug!("Getting public keys ");
   
     let results = public_keys
       
@@ -31,16 +41,16 @@ pub fn add_public_key(state: State<'_, Database>,nickname: &str,public_key: &str
     let Ok(Some(state)) = state.read().map(|a| a.clone()) else{
         return Err("Error reading state".to_string());
     };
-    println!("Adding public key {}", nickname);
+    tracing::debug!("Adding public key {}", nickname);
     let key = match SignedPublicKey::from_string(public_key){
         Ok(key) => key.0,
         Err(err) =>{
-            println!("Error parsing key: {}",err);
+            tracing::debug!("Error parsing key: {}",err);
             return Err(err.to_string());
         }
     };
     if let Err(err) = key.verify(){
-        println!("Error verifying key: {}",err);
+        tracing::debug!("Error verifying key: {}",err);
         return Err(err.to_string());
     }
 
