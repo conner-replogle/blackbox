@@ -14,6 +14,16 @@ BlackBox is a cross-platform tool for storing PGP keys securely and encrypting/d
 
 As of right now just clone the repo and run `pnpm install` then run the dev command in package.json
 
+## Development TODO
+- Create Error type for project
+- Make all db functions seperated into folder
+- encrypting messages
+
+
+## Potential Ideas
+- Monero Wallet Integration
+
+
 ## Usage
 1. **Add a PGP Key**  
    - Import or generate PGP keys inside the app.
@@ -27,13 +37,8 @@ As of right now just clone the repo and run `pnpm install` then run the dev comm
 - [ ] Any dependencies or libraries that need to be installed beforehand?  
 
 ## Security
-- **Encryption standard used**: (e.g., AES-256)  
-- **How keys are stored**: (e.g., encrypted database, keychain storage)  
-- **Does the app send or receive data remotely?** (Yes/No)  
-
-## Development Roadmap
-- [ ] What major features are planned for future releases?  
-- [ ] Any known limitations or current issues? (e.g., no key sync feature)  
+- **How keys are stored**: Encrypted SQLite Database SQLCipher, Password protected
+- **Does the app send or receive data remotely?** No
 
 ## Feedback and Contributions
 We encourage testers and developers to report bugs and suggest features during the alpha phase!  
@@ -41,6 +46,6 @@ We encourage testers and developers to report bugs and suggest features during t
 - **Contributions**: See the [CONTRIBUTING.md](./CONTRIBUTING.md) file for contribution guidelines.  
 
 ## License
-- [ ] What type of license will this project use (MIT, GPL, etc.)?  
+GPL V3
 
 

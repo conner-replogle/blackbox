@@ -31,6 +31,7 @@
             <a href="/pubkey"><h2 class="text-primary text-sm">Add Public Key</h2></a>
 
             <a href="/decrypt"><h2 class="text-primary text-sm">Decrypt Message</h2></a>
+            <a href="/encrypt"><h2 class="text-primary text-sm">Encrypt Message</h2></a>
             <a href="/contacts"><h2 class="text-primary text-sm">Contact Book</h2></a>
 
             <a href="/identities"><h2 class="text-primary text-sm">Identities</h2></a>
