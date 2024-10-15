@@ -1,4 +1,3 @@
-use diesel::sqlite::Sqlite;
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 use diesel::{connection::SimpleConnection, prelude::*, r2d2::Pool};
 use dotenvy::dotenv;
@@ -252,6 +251,7 @@ fn encrypt_message(state: State<'_, Database>,pkey_id: &str,message: &str,pass_k
             None
         }
     };
+    //SHOUDL I HAVE FILE NAME IDC IT WORKS BUT LIKE WHY IT HERE
     let mut message = Message::new_literal("msg.txt", message);
     if let Some(sign) = signer_key{
         message = message.sign(&mut rng, &sign, || pass_key.to_string(), HashAlgorithm::SHA2_256).map_err(|a| a.to_string())?;
@@ -259,16 +259,18 @@ fn encrypt_message(state: State<'_, Database>,pkey_id: &str,message: &str,pass_k
     
        // Encrypt the message
     let encrypted_message = message.compress(CompressionAlgorithm::ZLIB).map_err(|a| a.to_string())?
+
+    // WHAT THE FUCK ARE THESE OPTIONS NEED TO FIND OUT STANDARD
     .encrypt_to_keys_seipdv2(
     &mut rng,
-        SymmetricKeyAlgorithm::AES128, // Symmetric encryption algorithm
+        SymmetricKeyAlgorithm::AES128,
         AeadAlgorithm::Ocb,
-        0x06,
-        &[&key],                // Recipients' public keys
+        0x06,// THIS ONE ESPCIALLY LUCKY FUCKING GUESS maybe it needs to be a 1000 or -6 or 1 I have no clue
+        &[&key],      
     )
     .expect("Encryption failed");
 
-
+    //WHAT IS ARMOR
     let text = encrypted_message.to_armored_string(ArmorOptions::default()).map_err(|a| a.to_string())?;
 
 
