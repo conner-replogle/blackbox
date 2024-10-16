@@ -1,23 +1,11 @@
-use diesel::{connection::SimpleConnection, prelude::*, r2d2::Pool};
-use dotenvy::dotenv;
+use diesel::prelude::*;
 use crate::db::Database;
-use crate::models::{NewPrivateKey, NewPublicKey, PrivateKey, PublicKey};
-use pgp::crypto::aead::AeadAlgorithm;
-use pgp::crypto::hash::HashAlgorithm;
-use pgp::crypto::sym::SymmetricKeyAlgorithm;
+use crate::models::{PrivateKey, PublicKey};
 use pgp::ser::Serialize;
-use pgp::types::{CompressionAlgorithm, SecretKeyTrait, SignatureBytes};
-use pgp::{message, ArmorOptions, Signature};
-use pgp::{ types::PublicKeyTrait as _, Deserializable, Message, SignedPublicKey, SignedSecretKey};
-use rand::rngs::ThreadRng;
-use crate::schema::private_keys;
-use tauri::async_runtime::spawn_blocking;
-use tauri::{AppHandle, Emitter, Manager};
-use std::path::{Path, PathBuf};
-use std::sync::{Arc, RwLock};
-use std::{env, str::from_utf8};
+use pgp::types::SecretKeyTrait;
+use pgp::{ Deserializable, Message, SignedPublicKey, SignedSecretKey};
+use std::str::from_utf8;
 use tauri::State;
-use diesel::r2d2::{ConnectionManager, CustomizeConnection};
 
 #[tauri::command]
 pub fn decrypt_message(state: State<'_, Database>,pkey_id: &str,message: &str,pass_key:&str,signer: Option<&str>) -> Result<String, String> {
@@ -35,7 +23,7 @@ pub fn decrypt_message(state: State<'_, Database>,pkey_id: &str,message: &str,pa
     let message = Message::from_string(message).map_err(|a| a.to_string())?.0;
 
 
-    if result.len() == 0 {
+    if result.is_empty() {
         return Err("Private key not found".to_string());
     }else if result.len() > 1{
         return Err("Multiple private keys found".to_string());
@@ -61,7 +49,7 @@ pub fn decrypt_message(state: State<'_, Database>,pkey_id: &str,message: &str,pa
                 .select(PublicKey::as_select())
                 .load(&mut state.get().unwrap())
                 .expect("Error loading public_keys");
-            if result.len() == 0 {
+            if result.is_empty() {
                 return Err("Public key not found".to_string());
             }else if result.len() > 1{
                 return Err("Multiple public keys found".to_string());
@@ -132,6 +120,6 @@ pub fn decrypt_message(state: State<'_, Database>,pkey_id: &str,message: &str,pa
 
 
 
-    return Ok(text);
+    Ok(text)
 }
 

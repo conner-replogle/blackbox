@@ -17,7 +17,7 @@ pub struct EncryptedCustomizer{
 impl CustomizeConnection<SqliteConnection, diesel::r2d2::Error> for EncryptedCustomizer{
     fn on_acquire(&self, conn: &mut SqliteConnection) -> Result<(), diesel::r2d2::Error> {
         tracing::debug!("Acquiring connection");
-        conn.batch_execute(&format!("PRAGMA key='{}'",self.password)).map_err(|a| diesel::r2d2::Error::QueryError(a))?;
+        conn.batch_execute(&format!("PRAGMA key='{}'",self.password)).map_err(diesel::r2d2::Error::QueryError)?;
         conn.batch_execute("
             PRAGMA busy_timeout = 10;
             PRAGMA journal_mode = WAL;
@@ -25,7 +25,7 @@ impl CustomizeConnection<SqliteConnection, diesel::r2d2::Error> for EncryptedCus
             PRAGMA wal_autocheckpoint = 1000;
             PRAGMA wal_checkpoint(TRUNCATE);
             PRAGMA foreign_keys = ON;
-        ").map_err(|a| diesel::r2d2::Error::QueryError(a))?;
+        ").map_err(diesel::r2d2::Error::QueryError)?;
         conn.run_pending_migrations(MIGRATIONS).unwrap();
 
         Ok(())
@@ -62,5 +62,5 @@ pub fn establish_connection(password: &str,path:PathBuf) -> Result<Pool<Connecti
 
 
 
-    return Ok(pool);
+    Ok(pool)
 }

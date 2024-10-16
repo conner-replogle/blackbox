@@ -1,23 +1,8 @@
-use diesel::{connection::SimpleConnection, prelude::*, r2d2::Pool};
-use dotenvy::dotenv;
+use diesel::prelude::*;
 use crate::db::Database;
-use crate::models::{NewPrivateKey, NewPublicKey, PrivateKey, PublicKey};
-use pgp::crypto::aead::AeadAlgorithm;
-use pgp::crypto::hash::HashAlgorithm;
-use pgp::crypto::sym::SymmetricKeyAlgorithm;
-use pgp::ser::Serialize;
-use pgp::types::{CompressionAlgorithm, SecretKeyTrait, SignatureBytes};
-use pgp::{message, ArmorOptions, Signature};
-use pgp::{ types::PublicKeyTrait as _, Deserializable, Message, SignedPublicKey, SignedSecretKey};
-use rand::rngs::ThreadRng;
-use crate::schema::private_keys;
-use tauri::async_runtime::spawn_blocking;
-use tauri::{AppHandle, Emitter, Manager};
-use std::path::{Path, PathBuf};
-use std::sync::{Arc, RwLock};
-use std::{env, str::from_utf8};
+use crate::models::{NewPrivateKey, PrivateKey};
+use pgp::{ types::PublicKeyTrait as _, Deserializable, SignedSecretKey};
 use tauri::State;
-use diesel::r2d2::{ConnectionManager, CustomizeConnection};
 
 #[tauri::command]
 pub fn get_private_keys(state: State<'_, Database>) -> Result<Vec<PrivateKey>,String> {
@@ -32,7 +17,7 @@ pub fn get_private_keys(state: State<'_, Database>) -> Result<Vec<PrivateKey>,St
         .select(PrivateKey::as_select())
         .load(&mut state.get().unwrap())
         .expect("Error loading private_keys");
-    return Ok(results);
+    Ok(results)
 }
 
 
@@ -66,5 +51,5 @@ pub fn add_private_key(state: State<'_, Database>,nickname: &str,private_key: &s
         .get_result(&mut state.get().unwrap())
         .expect("Error saving new private key");
 
-    return Ok(key.key_id);
+    Ok(key.key_id)
 }
