@@ -88,13 +88,19 @@ pub fn encrypt_message(state: State<'_, Database>,pkey_id: &str,message: &str,pa
     let encrypted_message = message.compress(CompressionAlgorithm::ZLIB).map_err(|a| a.to_string())?
 
         // WHAT THE FUCK ARE THESE OPTIONS NEED TO FIND OUT STANDARD
-        .encrypt_to_keys_seipdv2(
+           .encrypt_to_keys_seipdv1(
             &mut rng,
             SymmetricKeyAlgorithm::AES128,
-            AeadAlgorithm::Ocb,
-            0x06,// THIS ONE ESPCIALLY LUCKY FUCKING GUESS maybe it needs to be a 1000 or -6 or 1 I have no clue
             &[&key],
-        )
+           )
+        // I belive this is not commonly used
+        // .encrypt_to_keys_seipdv2(
+        //     &mut rng,
+        //     SymmetricKeyAlgorithm::AES128,
+        //     AeadAlgorithm::Ocb,
+        //     0x06,// THIS ONE ESPCIALLY LUCKY FUCKING GUESS maybe it needs to be a 1000 or -6 or 1 I have no clue
+        //     &[&key],
+        // )
         .expect("Encryption failed");
 
     //WHAT IS ARMOR

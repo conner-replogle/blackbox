@@ -83,6 +83,6 @@
     <Textarea class="w-full h-full" bind:value={message} placeholder="Paste Message Here" />
     <Input class="w-full" bind:value={password} placeholder="Password" />
     <Button on:click={() => decode()}>Decrypt</Button>
-    <Textarea class="w-full h-full pointer-events-none" disabled bind:value={decrypted_message} placeholder="Decrypted Message" />
+    <Textarea class="w-full h-full" disabled bind:value={decrypted_message} placeholder="Decrypted Message" />
 </div>
 

@@ -5,6 +5,7 @@ mod public_keys;
 mod auth;
 mod encrypt;
 mod decrypt;
+mod generate;
 
 pub fn register(builder: Builder<Wry>) -> Builder<Wry>
 {
