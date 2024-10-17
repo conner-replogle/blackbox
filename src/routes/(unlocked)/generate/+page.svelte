@@ -10,6 +10,7 @@
     import type { Snapshot } from './$types';
     import { writable } from "svelte/store";
     import { browser } from "$app/environment";
+    import { restorable } from "@/helper";
 	
 	
 	
@@ -23,14 +24,7 @@
     let generating: boolean = false;
 
     //make the next few lines repeatable
-    const out = writable(browser && JSON.parse(sessionStorage.getItem("generated_keys")??"") || {
-        private_key:'',
-        public_key:''
-    });
-    out.subscribe((val) => {
-        if (browser) return (sessionStorage.generated_keys = JSON.stringify(val));
-    })
-    console.log(out);
+    const out = restorable("generated_keys", {private_key:'', public_key:''});
     
     async function generate() {
         try {

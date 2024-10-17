@@ -22,6 +22,7 @@ import Textarea from '@/custom-components/TextArea2.svelte';
     onMount(fetchData)
 
     let message = '';
+    
     let encrypted_message = '';
     let selected_priv_key = "";
     let selected_sign_key: string|undefined = undefined;
