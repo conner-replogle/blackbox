@@ -221,6 +221,7 @@ dependencies = [
  "rand 0.8.5",
  "serde",
  "serde_json",
+ "smallvec",
  "tauri",
  "tauri-build",
  "tauri-plugin-shell",

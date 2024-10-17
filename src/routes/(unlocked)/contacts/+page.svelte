@@ -5,7 +5,7 @@
     import * as Card from "$lib/components/ui/card";
       import { MessageSquareText } from 'lucide-svelte';
       import { get_private_keys, get_public_keys } from '@/api';
-      import Textarea from '@/components/ui/textarea/textarea.svelte';
+      import Textarea from '@/custom-components/TextArea2.svelte';
       import { invoke } from '@tauri-apps/api/core';
       import { toast } from 'svelte-sonner';
   

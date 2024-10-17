@@ -27,6 +27,7 @@
         <Separator class="my-2"/>
 
         <nav class="flex flex-col pl-2 gap-2">
+            <a href="/generate"><h2 class="text-primary text-sm">Generate Keys</h2></a>
             <a href="/privkey"><h2 class="text-primary text-sm">Add Private Key</h2></a>
             <a href="/pubkey"><h2 class="text-primary text-sm">Add Public Key</h2></a>
 

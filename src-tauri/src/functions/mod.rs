@@ -18,7 +18,8 @@ pub fn register(builder: Builder<Wry>) -> Builder<Wry>
         auth::unlock,
         auth::check_auth,
         encrypt::encrypt_message,
-        decrypt::decrypt_message
+        decrypt::decrypt_message,
+        generate::generate_key,
     ])
 
 }

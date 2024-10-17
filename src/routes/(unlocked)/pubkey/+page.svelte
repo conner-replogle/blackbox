@@ -1,8 +1,7 @@
 <script lang="ts">
     import { invoke } from "@tauri-apps/api/core";
     import { Button } from "$lib/components/ui/button";
-    import Textarea from "@/components/ui/textarea/textarea.svelte";
-    import { Input } from "@/components/ui/input";
+import Textarea from '@/custom-components/TextArea2.svelte';    import { Input } from "@/components/ui/input";
     import { toast } from "svelte-sonner";
 
   
