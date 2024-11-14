@@ -4,10 +4,11 @@
     import Button from "@/components/ui/button/button.svelte";
     import { ClipboardIcon, CopyIcon, LucideClipboard } from "lucide-svelte";
     // Text Area compoenent with a clipboard in top right corner to copy text
+   
 </script>
 
 
-<div style="position: relative; h-full w-full" >
+<div class={$$restProps.class} >
     <Textarea {...$$restProps} bind:value={value} />
     <Button 
         on:click={() => navigator.clipboard.writeText(value)} 

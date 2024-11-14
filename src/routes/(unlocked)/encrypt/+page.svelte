@@ -47,7 +47,7 @@ import Textarea from '@/custom-components/TextArea2.svelte';
 </script>
 
 <div class="p-5 flex flex-col gap-2 w-full h-full">
-    <div class="flex flex-row gap-2">
+    <div class="flex flex-row gap-2 ">
         <Select.Root selected={{value:"",label:""}} onSelectedChange={
             (selected) => {
                 selected && (selected_priv_key = selected.value);
@@ -79,8 +79,8 @@ import Textarea from '@/custom-components/TextArea2.svelte';
                 </Select.Content>
         </Select.Root>
     </div>
-    <Textarea class="w-full h-full" bind:value={message} placeholder="Paste Message Here" />
+    <Textarea class="w-full h-full flex-grow" bind:value={message} placeholder="Paste Encrypted Message Here" />
     <Button on:click={() => decode()}>Encrypt</Button>
-    <Textarea class="w-full h-full " disabled bind:value={encrypted_message} placeholder="Decrypted Message" />
+    <Textarea class="w-full h-full flex-grow" disabled bind:value={encrypted_message} placeholder="Decrypted Message" />
 </div>
 
