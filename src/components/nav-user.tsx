@@ -29,6 +29,8 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
+import { invoke } from "@tauri-apps/api/core"
+import { useNavigate } from "react-router-dom"
 
 export function NavUser({
   user,
@@ -39,6 +41,7 @@ export function NavUser({
     avatar: string
   }
 }) {
+  const navigate = useNavigate();
   const { isMobile } = useSidebar()
 
   return (
@@ -102,7 +105,10 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={async ()=>{
+              await invoke("lock");
+              navigate("/unlock");
+            }}>
               <LogOut />
               Log out
             </DropdownMenuItem>

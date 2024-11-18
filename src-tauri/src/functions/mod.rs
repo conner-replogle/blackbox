@@ -1,14 +1,13 @@
 use tauri::{generate_handler, Builder, Wry};
 
+mod auth;
+mod decrypt;
+mod encrypt;
+mod generate;
 mod private_keys;
 mod public_keys;
-mod auth;
-mod encrypt;
-mod decrypt;
-mod generate;
 
-pub fn register(builder: Builder<Wry>) -> Builder<Wry>
-{
+pub fn register(builder: Builder<Wry>) -> Builder<Wry> {
     builder.invoke_handler(generate_handler![
         private_keys::get_private_keys,
         private_keys::add_private_key,
@@ -21,5 +20,4 @@ pub fn register(builder: Builder<Wry>) -> Builder<Wry>
         decrypt::decrypt_message,
         generate::generate_key,
     ])
-
 }

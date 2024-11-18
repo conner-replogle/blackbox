@@ -3,12 +3,27 @@ import { SidebarInset, SidebarProvider, SidebarTrigger } from "./components/ui/s
 import { AppSidebar } from "./components/app-sidebar";
 import { Separator } from "./components/ui/separator";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "./components/ui/breadcrumb";
+import { Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { listen } from '@tauri-apps/api/event';
+import { check_status } from "./lib/api/database";
 
-interface RootLayoutProps {
-  children: React.ReactNode;
-}
 
-export default function RootLayout({ children }: RootLayoutProps) {
+export default function RootLayout() {
+  const navigate = useNavigate();
+  useEffect(() => {
+    check_status().then((status) => {
+      console.log(status);
+      if (!status){
+        navigate("/unlock");
+      }
+    });
+   
+  },[]);
+
+
+  const location = useLocation();
+  const paths = location.pathname.split("/").map((path) => path.toLocaleUpperCase());
   return (
     <div className="min-h-screen bg-background font-sans antialiased">
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
@@ -22,27 +37,26 @@ export default function RootLayout({ children }: RootLayoutProps) {
             <Separator orientation="vertical" className="mr-2 h-4" />
             <Breadcrumb>
               <BreadcrumbList>
-                <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="#">
-                    Building Your Application
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator className="hidden md:block" />
-                <BreadcrumbItem>
-                  <BreadcrumbPage>Data Fetching</BreadcrumbPage>
-                </BreadcrumbItem>
+                {
+                  paths.map((path, index) => (
+                    <>
+                    <BreadcrumbItem className={index == paths.length-1 ? "" : "hidden md:block"} key={index}>
+                      <BreadcrumbLink href="#">
+                        {path}
+                      </BreadcrumbLink>
+                    </BreadcrumbItem>
+                    {
+                      (index < paths.length-1) && <BreadcrumbSeparator className="hidden md:block" />
+                    }
+                    </>
+                  ))
+                }
+             
               </BreadcrumbList>
             </Breadcrumb>
           </div>
         </header>
-        <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-          <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-            <div className="aspect-video rounded-xl bg-muted/50" />
-            <div className="aspect-video rounded-xl bg-muted/50" />
-            <div className="aspect-video rounded-xl bg-muted/50" />
-          </div>
-          <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" />
-        </div>
+        <Outlet />
       </SidebarInset>
     </SidebarProvider>
         </div>

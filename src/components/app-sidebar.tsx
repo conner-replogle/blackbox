@@ -50,41 +50,41 @@ const data = {
   ],
   navMain: [
     {
-      title: "Playground",
-      url: "#",
+      title: "PGP",
+      url: "pgp",
       icon: SquareTerminal,
       isActive: true,
       items: [
         {
-          title: "History",
-          url: "#",
+          title: "Generate",
+          url: "pgp/generate",
         },
         {
-          title: "Starred",
-          url: "#",
+          title: "Message",
+          url: "pgp/message",
         },
         {
-          title: "Settings",
-          url: "#",
+          title: "Identities",
+          url: "pgp/identities",
         },
       ],
     },
     {
-      title: "Models",
-      url: "#",
+      title: "Monero",
+      url: "monero",
       icon: Bot,
       items: [
         {
-          title: "Genesis",
-          url: "#",
+          title: "Wallet",
+          url: "monero/wallet",
         },
         {
-          title: "Explorer",
-          url: "#",
+          title: "Send",
+          url: "monero/send",
         },
         {
-          title: "Quantum",
-          url: "#",
+          title: "Recieve",
+          url: "monero/recieve",
         },
       ],
     },

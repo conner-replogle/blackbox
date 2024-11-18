@@ -1,6 +1,6 @@
 import { siteConfig } from "@/config/site";
 import { buttonVariants } from "@/components/ui/button";
-
+import { invoke } from '@tauri-apps/api/core';
 export default function HomePage() {
   return (
     <section className="container grid items-center gap-6 pb-8 pt-6 md:py-10">
