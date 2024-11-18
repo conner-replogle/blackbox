@@ -22,6 +22,7 @@ pub fn run() {
     let builder = tauri::Builder::default()
         .setup(|app| {
             
+            
             let main_window = app.get_webview_window("main").unwrap();
             main_window.eval("window.location.href= '/';").unwrap();
             app.manage(Arc::new(RwLock::new(None)) as Database);
