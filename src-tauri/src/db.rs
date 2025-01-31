@@ -16,7 +16,7 @@ pub struct EncryptedCustomizer {
 
 impl CustomizeConnection<SqliteConnection, diesel::r2d2::Error> for EncryptedCustomizer {
     fn on_acquire(&self, conn: &mut SqliteConnection) -> Result<(), diesel::r2d2::Error> {
-        tracing::debug!("Acquiring connection");
+        log::debug!("Acquiring connection");
         conn.batch_execute(&format!("PRAGMA key='{}'", self.password))
             .map_err(diesel::r2d2::Error::QueryError)?;
         conn.batch_execute(
@@ -43,12 +43,12 @@ pub fn establish_connection(
     dotenv().ok();
 
     if !path.exists() {
-        tracing::debug!("Creating directory");
+        log::debug!("Creating directory");
         std::fs::create_dir_all(path.as_path()).unwrap();
     }
 
     let db_path = path.join("blackbox.db");
-    tracing::debug!("Connecting to {}", db_path.as_path().to_str().unwrap());
+    log::debug!("Connecting to {}", db_path.as_path().to_str().unwrap());
     let pool = match Pool::builder()
         .connection_customizer(Box::new(EncryptedCustomizer {
             password: password.to_string(),
@@ -59,7 +59,7 @@ pub fn establish_connection(
         )) {
         Ok(pool) => pool,
         Err(err) => {
-            tracing::debug!("Error creating pool: {:?}", err);
+            log::debug!("Error creating pool: {:?}", err);
             return Err(diesel::r2d2::Error::ConnectionError(
                 ConnectionError::BadConnection(
                     "Incorrect Password or connection issue".to_string(),

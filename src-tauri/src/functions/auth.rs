@@ -11,7 +11,7 @@ use tauri::{AppHandle, Manager};
 #[tauri::command]
 pub fn check_auth(state: State<'_, Database>) -> Result<bool, String> {
     let unlocked = state.read().unwrap().is_some();
-    tracing::debug!("Checking auth: {}", unlocked);
+    log::debug!("Checking auth: {}", unlocked);
 
     Ok(unlocked)
 }
@@ -22,9 +22,9 @@ pub async fn unlock(
     app: AppHandle,
     password: String,
 ) -> Result<bool, String> {
-    tracing::debug!("Unlocking");
+    log::debug!("Unlocking");
     #[cfg(debug_assertions)]
-    let path = PathBuf::from_str("data").unwrap();
+    let path = PathBuf::from_str("../data").unwrap();
     #[cfg(not(debug_assertions))]
     let path = app.path().app_data_dir().unwrap();
 
@@ -44,7 +44,7 @@ pub async fn unlock(
 
 #[tauri::command]
 pub fn lock(state: State<'_, Database>) -> Result<(), String> {
-    tracing::debug!("Locking");
+    log::debug!("Locking");
 
     state.write().map(|mut a| a.take()).unwrap();
 

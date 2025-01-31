@@ -23,6 +23,9 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar"
+import { Button } from "./ui/button"
+import { lock } from "@/lib/api/database"
+import { useNavigate } from "react-router-dom"
 
 // This is sample data.
 const data = {
@@ -67,6 +70,12 @@ const data = {
           title: "Identities",
           url: "pgp/identities",
         },
+
+       {
+          title: "Contacts",
+          url: "pgp/contacts",
+        },
+
       ],
     },
     {
@@ -155,6 +164,8 @@ const data = {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+
+  const navigate = useNavigate();
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -165,9 +176,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavProjects projects={data.projects} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+         <Button onClick={()=> lock().then(()=> navigate("/unlock")) }>
+        Lock
+      </Button>
       </SidebarFooter>
-      <SidebarRail />
+     <SidebarRail/>
     </Sidebar>
   )
 }

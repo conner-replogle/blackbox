@@ -27,7 +27,7 @@ pub fn encrypt_message(
         .load(&mut state.get().unwrap())
         .expect("Error loading public ");
 
-    tracing::debug!("Looking for key {}", pkey_id);
+    log::debug!("Looking for key {}", pkey_id);
 
     if result.is_empty() {
         return Err("Public key not found".to_string());
@@ -38,7 +38,7 @@ pub fn encrypt_message(
     let key = match SignedPublicKey::from_string(&key.public_key) {
         Ok(key) => key.0,
         Err(err) => {
-            tracing::debug!("Error parsing key: {}", err);
+            log::debug!("Error parsing key: {}", err);
             return Err(err.to_string());
         }
     };
@@ -61,7 +61,7 @@ pub fn encrypt_message(
             let key = match SignedSecretKey::from_string(&key.private_key) {
                 Ok(key) => key.0,
                 Err(err) => {
-                    tracing::debug!("Error parsing key: {}", err);
+                    log::debug!("Error parsing key: {}", err);
                     return Err(err.to_string());
                 }
             };

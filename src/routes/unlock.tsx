@@ -1,13 +1,5 @@
-import { siteConfig } from "@/config/site";
 import { Button, buttonVariants } from "@/components/ui/button";
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-  } from "@/components/ui/card"
+
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { unlock } from "@/lib/api/database";
@@ -39,6 +31,7 @@ export default function UnlockPage() {
 
 
     function clickPress(event:any) {
+      console.log(event.keyCode)
         if (event.keyCode == 13) {
             Unlock();
         }

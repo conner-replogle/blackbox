@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { ClipboardIcon } from "lucide-react";
 import { Button } from "../ui/button";
@@ -7,10 +7,13 @@ export function TextAreaWithCopy(props:React.ComponentProps<"textarea">) {
 
   const handleCopy = () => {
     navigator.clipboard.writeText(value).then(
-      () => alert("Copied to clipboard!"), // Optional feedback
-      (err) => alert("Failed to copy: " + err) // Optional error handling
+      () => console.log("Copied to clipboard!"), // Optional feedback
+      (err) => console.log("Failed to copy: " + err) // Optional error handling
     );
   };
+  useEffect(() => {
+    setValue(props.value ? props.value as string: value)
+  },[props]);
 
   return (
     <div className={"relative " +props.className}>
@@ -31,7 +34,7 @@ export function TextAreaWithCopy(props:React.ComponentProps<"textarea">) {
       <Button
       className="absolute top-1 right-1"
         onClick={handleCopy}
-        variant={"outline"}
+        variant={"ghost"}
         size={"icon"}
         aria-label="Copy text"
       >

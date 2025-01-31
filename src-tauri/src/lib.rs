@@ -15,7 +15,7 @@ pub fn run() {
         .plugin(tauri_plugin_log::Builder::new().build())
         .setup(|app| {
             let main_window = app.get_webview_window("main").unwrap();
-            main_window.eval("window.location.href= '/';").unwrap();
+            main_window.eval("window.location.href= '/unlock';").unwrap();
             app.manage(Arc::new(RwLock::new(None)) as Database);
             Ok(())
         })

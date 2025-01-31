@@ -25,7 +25,7 @@ pub fn decrypt_message(
         .load(&mut state.get().unwrap())
         .expect("Error loading private_keys");
 
-    tracing::debug!("Looking for key {}", pkey_id);
+    log::debug!("Looking for key {}", pkey_id);
     let message = Message::from_string(message).map_err(|a| a.to_string())?.0;
 
     if result.is_empty() {
@@ -37,7 +37,7 @@ pub fn decrypt_message(
     let key = match SignedSecretKey::from_string(&key.private_key) {
         Ok(key) => key.0,
         Err(err) => {
-            tracing::debug!("Error parsing key: {}", err);
+            log::debug!("Error parsing key: {}", err);
             return Err(err.to_string());
         }
     };
@@ -63,7 +63,7 @@ pub fn decrypt_message(
             let key = match SignedPublicKey::from_string(&key.public_key) {
                 Ok(key) => key.0,
                 Err(err) => {
-                    tracing::debug!("Error parsing key: {}", err);
+                    log::debug!("Error parsing key: {}", err);
                     return Err(err.to_string());
                 }
             };
@@ -96,7 +96,7 @@ pub fn decrypt_message(
                         }
                     }
                     .map_err(|err| err.to_string())?;
-                    tracing::debug!("{:?}", signature);
+                    log::debug!("{:?}", signature);
                     header += &format!("Signed by {:?} \n", signature.issuer());
                     if let Some(date) = signature.created() {
                         header += &format!(
