@@ -1,7 +1,7 @@
 import { Separator } from "@radix-ui/react-separator";
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator } from "./ui/breadcrumb";
 import { SidebarTrigger } from "./ui/sidebar";
-import { useLocation } from "react-router-dom";
+import { useLocation } from "react-router";
 
 export function Header(){
 

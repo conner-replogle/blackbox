@@ -3,7 +3,7 @@ import { SidebarInset, SidebarProvider, SidebarTrigger } from "./components/ui/s
 import { AppSidebar } from "./components/app-sidebar";
 import { Separator } from "./components/ui/separator";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from "./components/ui/breadcrumb";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router";
 import { useEffect } from "react";
 import { check_status } from "./lib/api/database";
 

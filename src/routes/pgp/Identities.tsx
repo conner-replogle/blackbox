@@ -2,11 +2,12 @@ import { Header } from "@/components/header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { usePrivateKeys } from "@/hooks/use-keys";
-import { CopyIcon, PlusCircleIcon, Trash, UserCircle } from "lucide-react";
+import { PlusCircleIcon, Trash, UserCircle } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { RemovePrivateKey } from "@/lib/api/pgp";
-import {  SavePrivateKey } from "@/lib/api/pgp";
+import { GeneratePGPKeys, SavePrivateKey } from "@/lib/api/pgp";
 import { useState } from "react";
+import { GeneratePGPKeysResponse } from "@/lib/api/types";
 import {
   Dialog,
   DialogContent,
@@ -17,6 +18,7 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { invoke } from "@tauri-apps/api/core";
 import { Textarea } from "@/components/ui/textarea";
 
 
@@ -24,10 +26,10 @@ export default function Identities() {
   const [keys,reload] = usePrivateKeys();
 
   return (
-    <section >
+    <section className="container h-screen flex flex-col">
       <Header />
       
-      <ScrollArea className="container h-[calc(100vh-100px)] pr-4">
+      <ScrollArea className="h-[calc(100vh-100px)] pr-4">
         {keys.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-40 text-muted-foreground">
             <UserCircle size={40} className="mb-2" />
@@ -42,26 +44,14 @@ export default function Identities() {
                     <UserCircle className="text-muted-foreground" />
                     <span className="font-medium">{key.nickname}</span>
                   </div>
-                  <span className="flex justify-center items-center gap-3 h-8">
-                      <Button
-                      variant="ghost"
-                      size="icon"
-                      className="opacity-0 group-hover:opacity-100 transition-opacity"
-                      onClick={() => {navigator.clipboard.writeText(key.private_key)}}
-                      >
-                        <CopyIcon className="h-4 w-4 " />
-                      </Button>
-
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="opacity-0 group-hover:opacity-100 transition-opacity"
-                        onClick={() => {RemovePrivateKey(key.key_id).then(()=>{reload()})}}
-                      >
-                        <Trash className="h-4 w-4 text-destructive" />
-                      </Button>
-                  </span>
-
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="opacity-0 group-hover:opacity-100 transition-opacity"
+                    onClick={() => {RemovePrivateKey(key.key_id).then(()=>{reload()})}}
+                  >
+                    <Trash className="h-4 w-4 text-destructive" />
+                  </Button>
                 </CardContent>
               </Card>
             ))}

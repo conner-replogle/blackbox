@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { unlock } from "@/lib/api/database";
 import { useToast } from "@/hooks/use-toast";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 export default function UnlockPage() {
     const [password, setPassword] = useState("");
     const [unlocking, setUnlocking] = useState(false);

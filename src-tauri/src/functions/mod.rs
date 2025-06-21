@@ -6,7 +6,7 @@ mod encrypt;
 mod generate;
 mod private_keys;
 mod public_keys;
-
+mod wallet;
 pub fn register(builder: Builder<Wry>) -> Builder<Wry> {
     builder.invoke_handler(generate_handler![
         private_keys::get_private_keys,
@@ -21,5 +21,9 @@ pub fn register(builder: Builder<Wry>) -> Builder<Wry> {
         encrypt::encrypt_message,
         decrypt::decrypt_message,
         generate::generate_key,
+        wallet::open_rpc,
+        wallet::close_rpc,
+        wallet::check_rpc,
+        wallet::test_rpc
     ])
 }

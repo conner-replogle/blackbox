@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/sidebar"
 import { Button } from "./ui/button"
 import { lock } from "@/lib/api/database"
-import { useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router"
 
 // This is sample data.
 const data = {

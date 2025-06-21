@@ -1,10 +1,12 @@
 use db::Database;
+use monero::MoneroWallet;
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 
 use std::env;
 use std::sync::{Arc, RwLock};
 use tauri::Manager;
 mod db;
+mod monero;
 mod functions;
 pub mod models;
 pub mod schema;
@@ -17,6 +19,7 @@ pub fn run() {
             let main_window = app.get_webview_window("main").unwrap();
             main_window.eval("window.location.href= '/unlock';").unwrap();
             app.manage(Arc::new(RwLock::new(None)) as Database);
+            app.manage(Arc::new(tokio::sync::RwLock::new(None)) as MoneroWallet);
             Ok(())
         })
         .plugin(tauri_plugin_shell::init());

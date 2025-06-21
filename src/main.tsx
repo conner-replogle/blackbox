@@ -6,7 +6,7 @@ import {
   BrowserRouter,
   createBrowserRouter,
   RouterProvider,
-} from "react-router-dom";
+} from "react-router";
 import { Toaster } from "./components/ui/toaster.tsx";
 
 
