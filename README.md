@@ -1,54 +1,62 @@
-# BlackBox (Alpha)
+# React Shadcn-UI Template
 
-BlackBox is a cross-platform tool for storing PGP keys securely and encrypting/decrypting messages. It is designed to provide a user-friendly experience with robust cryptographic capabilities, ensuring the security and privacy of sensitive communications.  
+This repository provides a boilerplate template for a React application using the [Shadcn-UI](https://github.com/your-link-to-shadcn-ui-repo) library and [Vite](https://vitejs.dev/) as the build tool and development server. The template is designed to help you kickstart your React projects with Shadcn-UI and Vite, offering a fast development environment and optimized production builds.
 
 ## Features
-- Store and manage **PGP keys** (private/public)
-- Encrypt and decrypt messages easily
-- Cross-platform support (Windows, macOS, Linux, Android, iOS)
-- Secure key storage using local encryption
-- Simple and clean user interface
 
-## Installation
-**Coming Soon** – Platform-specific instructions will be available once the app moves out of alpha. 
+- React 18 with the latest features and optimizations
+- Shadcn-UI integration for a modern and customizable UI component library
+- Vite for fast development and optimized production builds
+- ESLint and Prettier preconfigured for consistent code formatting and linting
 
-As of right now just clone the repo and run `pnpm install` then run the dev command in package.json
+## Getting Started
 
-## Development TODO
-- Create Error type for project
-- Make all db functions seperated into folder
-- create standards
-- ensure standards are met
-- delete keys
-- generate keys
+1. Clone this repository:
 
+   ```bash
+   git clone https://github.com/Youngermaster/react-shadcn-ui-template.git your-project-name
+   ```
 
-## Potential Ideas
-- Monero Wallet Integration
+2. Change to the project directory:
 
+   ```bash
+   cd your-project-name
+   ```
 
-## Usage
-1. **Add a PGP Key**  
-   - Import or generate PGP keys inside the app.
-2. **Encrypt a Message**  
-   - Select a public key to encrypt the message.
-3. **Decrypt a Message**  
-   - Use the private key to decrypt incoming encrypted messages.
+3. Install the dependencies:
 
-## Requirements
-- [ ] Minimum OS version for each platform?  
-- [ ] Any dependencies or libraries that need to be installed beforehand?  
+   ```bash
+   npm install
+   ```
 
-## Security
-- **How keys are stored**: Encrypted SQLite Database SQLCipher, Password protected
-- **Does the app send or receive data remotely?** No
+4. Start the development server:
 
-## Feedback and Contributions
-We encourage testers and developers to report bugs and suggest features during the alpha phase!  
-- **Issues and Feedback**: Open an issue on the GitHub page.  
-- **Contributions**: See the [CONTRIBUTING.md](./CONTRIBUTING.md) file for contribution guidelines.  
+   ```bash
+   npm run dev
+   ```
+
+   The development server should now be running at [http://localhost:3000](http://localhost:3000).
+
+## Building for Production
+
+To create an optimized production build, run:
+
+```bash
+npm run build
+```
+
+The output will be available in the `dist/` folder.
+
+## Customizing the Template
+
+You can customize the template by modifying the existing components or adding new ones in the `src` folder. You can also configure the Vite settings by editing the `vite.config.js` file.
+
+For more information on Shadcn-UI, please refer to the [official documentation](https://your-link-to-shadcn-ui-documentation).
+
+## Contributing
+
+Contributions are welcome! If you have any suggestions, improvements, or bug fixes, please feel free to submit a pull request or create an issue.
 
 ## License
-GPL V3
 
-
+This project is licensed under the [MIT License](LICENSE).

@@ -5,9 +5,9 @@
   "identifier": "com.blackbox.app",
   "build": {
     "beforeDevCommand": "pnpm dev",
-    "devUrl": "http://localhost:1420",
     "beforeBuildCommand": "pnpm build",
-    "frontendDist": "../build"
+    "devUrl": "http://localhost:5173",
+    "frontendDist": "../dist"
   },
   "app": {
     "windows": [
