@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { Header } from "@/components/header";
 
 
 export default function Generate() {
@@ -24,39 +23,36 @@ export default function Generate() {
 
 
   return (
-    <section >
-      <Header/>
-      <div className="container flex flex-col h-full gap-2 ">
-      <Button disabled={loadingGeneration} onClick={async ()=> {
-        setLoadingGeneration(true);
-        try{
-          let out = await GeneratePGPKeys();
-          setKeyPair(out);
-        }catch(err){
-          console.error(err);
-          toast.toast({
-            variant: "destructive",
-            title: "Uh oh! Something went wrong.",
-            description: err as string,
-          })
-        }
 
-        setLoadingGeneration(false);
+    <div className="container flex flex-col h-full gap-2 ">
+    <Button disabled={loadingGeneration} onClick={async ()=> {
+      setLoadingGeneration(true);
+      try{
+        let out = await GeneratePGPKeys();
+        setKeyPair(out);
+      }catch(err){
+        console.error(err);
+        toast.toast({
+          variant: "destructive",
+          title: "Uh oh! Something went wrong.",
+          description: err as string,
+        })
+      }
 
-  
+      setLoadingGeneration(false);
 
-      }} >
-       {loadingGeneration ? "Generating..." : "Generate Key Pair"} 
-      </Button>
 
-      <TextAreaWithCopy className="flex-grow h-full" value={keyPair?.private_key} disabled/>
-      <Input placeholder="Password" type="password" onChange={(a)=> {setPassword(a.target.value)}} />
-      <TextAreaWithCopy className="flex-grow h-full"  value={keyPair?.public_key} disabled/>
 
-      <SaveKeyPair private_key={keyPair?.private_key} password={password} />  
-      </div>
+    }} >
+      {loadingGeneration ? "Generating..." : "Generate Key Pair"} 
+    </Button>
 
-    </section>
+    <TextAreaWithCopy className="flex-grow h-full" value={keyPair?.private_key} disabled/>
+    <Input placeholder="Password" type="password" onChange={(a)=> {setPassword(a.target.value)}} />
+    <TextAreaWithCopy className="flex-grow h-full"  value={keyPair?.public_key} disabled/>
+
+    <SaveKeyPair private_key={keyPair?.private_key} password={password} />  
+    </div>
   );
 }
 

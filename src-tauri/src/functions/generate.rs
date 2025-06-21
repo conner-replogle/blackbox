@@ -1,16 +1,11 @@
-use crate::db::Database;
-use crate::models::{NewPrivateKey, PrivateKey};
-use diesel::prelude::*;
+
 use pgp::crypto::hash::HashAlgorithm;
-use pgp::crypto::rsa;
 use pgp::crypto::sym::SymmetricKeyAlgorithm;
-use pgp::types::{public, CompressionAlgorithm, SecretKeyTrait};
-use pgp::{types::PublicKeyTrait as _, Deserializable, SignedSecretKey};
+use pgp::types::{CompressionAlgorithm, SecretKeyTrait};
 use pgp::{ArmorOptions, KeyType, SecretKeyParamsBuilder};
 use rand::rngs::ThreadRng;
 use serde::{Deserialize, Serialize};
 use smallvec::smallvec;
-use tauri::State;
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Output {
     pub private_key: String,

@@ -1,5 +1,5 @@
 import { TextAreaWithCopy } from "@/components/mod-ui/copy-text-area";
-import { PrivateKey, PublicKey } from "@/lib/api/types";
+import { Key } from "@/lib/api/types";
 import { useState } from "react";
 import {
   Select,
@@ -13,7 +13,6 @@ import { usePrivateKeys, usePublicKeys } from "@/hooks/use-keys";
 import { EncryptMessage, DecryptMessage } from "@/lib/api/pgp";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import { Header } from "@/components/header";
 import { Input } from "@/components/ui/input";
 export default function Message() {
   const { toast } = useToast();
@@ -67,7 +66,7 @@ export default function Message() {
               <SelectValue placeholder="Public Key" />
             </SelectTrigger>
             <SelectContent>
-              {pubKeys.map((key: PublicKey) => (
+              {pubKeys.map((key: Key) => (
                 <SelectItem key={key.key_id} value={key.key_id}>
                   {key.nickname}
                 </SelectItem>
@@ -80,7 +79,7 @@ export default function Message() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value={null as unknown as string}>None</SelectItem>
-              {keys.map((key: PrivateKey) => (
+              {keys.map((key: Key) => (
                 <SelectItem key={key.key_id} value={key.key_id}>
                   {key.nickname}
                 </SelectItem>
@@ -107,7 +106,7 @@ export default function Message() {
               <SelectValue placeholder="Private Key" />
             </SelectTrigger>
             <SelectContent>
-              {keys.map((key: PrivateKey) => (
+              {keys.map((key: Key) => (
                 <SelectItem key={key.key_id} value={key.key_id}>
                   {key.nickname}
                 </SelectItem>
@@ -120,7 +119,7 @@ export default function Message() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value={null as unknown as string}>None</SelectItem>
-              {pubKeys.map((key: PublicKey) => (
+              {pubKeys.map((key: Key) => (
                 <SelectItem key={key.key_id} value={key.key_id}>
                   {key.nickname}
                 </SelectItem>
@@ -140,8 +139,7 @@ export default function Message() {
   }
 
   return (
-    <section>
-      <Header />
+
       <div className="container">
         <Tabs defaultValue="encrypt" className="w-full w-max-[600px] flex flex-col items-center">
           <TabsList className="w-full">
@@ -157,6 +155,6 @@ export default function Message() {
           {renderEncryptTab()}
         </Tabs>
       </div>
-    </section>
+
   );
 }

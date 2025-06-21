@@ -37,9 +37,9 @@ export async function SavePublicKey(nickname: string, _description: string, publ
     return await invoke("add_public_key",{nickname,publicKey});
 }
 export async function RemovePrivateKey(keyId: string): Promise<string> {
-    return await invoke("remove_private_key",{keyId});
+    return await invoke("remove_key",{keyId});
 }
 
 export async function RemovePublicKey(keyId: string): Promise<string> {
-    return await invoke("remove_public_key",{keyId});
+    return await invoke("remove_key",{keyId});
 }

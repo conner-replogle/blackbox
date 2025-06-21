@@ -1,9 +1,9 @@
 use crate::db::Database;
-use crate::models::{PrivateKey, PublicKey};
+use crate::models::Key;
 use diesel::prelude::*;
 use pgp::crypto::hash::HashAlgorithm;
 use pgp::crypto::sym::SymmetricKeyAlgorithm;
-use pgp::types::{CompressionAlgorithm, SecretKeyTrait};
+use pgp::types::{CompressionAlgorithm};
 use pgp::ArmorOptions;
 use pgp::{Deserializable, Message, SignedPublicKey, SignedSecretKey};
 use rand::rngs::ThreadRng;
@@ -20,10 +20,9 @@ pub fn encrypt_message(
     let Ok(Some(state)) = state.read().map(|a| a.clone()) else {
         return Err("Error reading state".to_string());
     };
-    use crate::schema::public_keys::dsl::*;
-    let result = public_keys
+    use crate::schema::keys::dsl::*;
+    let result = Key::public_keys()
         .filter(key_id.eq(pkey_id))
-        .select(PublicKey::as_select())
         .load(&mut state.get().unwrap())
         .expect("Error loading public ");
 
@@ -46,10 +45,8 @@ pub fn encrypt_message(
 
     let signer_key = match signer {
         Some(signer) => {
-            use crate::schema::private_keys::dsl::*;
-            let result = private_keys
+            let result:Vec<Key> = Key::private_keys()
                 .filter(key_id.eq(signer))
-                .select(PrivateKey::as_select())
                 .load(&mut state.get().unwrap())
                 .expect("Error loading private_keys");
             if result.is_empty() {
@@ -58,7 +55,7 @@ pub fn encrypt_message(
                 return Err("Multiple private keys found".to_string());
             }
             let key = &result[0];
-            let key = match SignedSecretKey::from_string(&key.private_key) {
+            let key = match SignedSecretKey::from_string(key.private_key.as_ref().unwrap()) {
                 Ok(key) => key.0,
                 Err(err) => {
                     log::debug!("Error parsing key: {}", err);

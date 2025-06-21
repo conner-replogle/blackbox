@@ -18,50 +18,39 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { invoke } from "@tauri-apps/api/core";
 import { Textarea } from "@/components/ui/textarea";
+import { Identity } from "@/components/organisms/Identity";
 
 
 export default function Identities() {
-  const [keys,reload] = usePrivateKeys();
+  const [keys,reload,loading] = usePrivateKeys();
 
   return (
-    <section className="container h-screen flex flex-col">
-      <Header />
-      
-      <ScrollArea className="h-[calc(100vh-100px)] pr-4">
-        {keys.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-40 text-muted-foreground">
+    <div>
+      <ScrollArea className="h-[calc(100vh-100px)] px-4">
+        {keys.length === 0  && !loading? (
+           <div className="flex flex-col items-center justify-center h-40 text-muted-foreground">
             <UserCircle size={40} className="mb-2" />
-            <p>No identities found</p>
+            <p>No Identities found</p>
           </div>
         ) : (
           <div className="space-y-4">
             {keys.map((key) => (
-              <Card key={key.nickname} className="group">
-                <CardContent className="flex items-center justify-between p-4">
-                  <div className="flex items-center gap-3">
-                    <UserCircle className="text-muted-foreground" />
-                    <span className="font-medium">{key.nickname}</span>
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="opacity-0 group-hover:opacity-100 transition-opacity"
-                    onClick={() => {RemovePrivateKey(key.key_id).then(()=>{reload()})}}
-                  >
-                    <Trash className="h-4 w-4 text-destructive" />
-                  </Button>
-                </CardContent>
-              </Card>
+              <Identity
+                Key={key}
+                onDelete={() => {
+                  RemovePrivateKey(key.key_id).then(() => {
+                    reload();
+                  });
+                }}
+              />
+          
             ))}
           </div>
         )}
       </ScrollArea>
       <AddIdentity/>
-
-      
-    </section>
+</div>
   );
 }
 

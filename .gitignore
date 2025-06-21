@@ -3,6 +3,7 @@ node_modules
 /build
 /.svelte-kit
 /package
+data
 .env
 .env.*
 !.env.example
@@ -138,3 +139,4 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+data/blackbox.db

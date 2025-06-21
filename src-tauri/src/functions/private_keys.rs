@@ -1,9 +1,9 @@
 use crate::db::Database;
-use crate::functions::public_keys::{add_public_key, remove_public_key};
-use crate::models::{NewPrivateKey,PrivateKey};
+use crate::functions::public_keys;
+use crate::models::{Key, NewPrivateKey, Key as PrivateKey};
 use diesel::prelude::*;
 use pgp::types::{public, SecretKeyTrait};
-use pgp::{ArmorOptions, PublicKey};
+use pgp::{ArmorOptions};
 use pgp::{types::PublicKeyTrait as _, Deserializable, SignedSecretKey};
 use rand::rngs::ThreadRng;
 use tauri::State;
@@ -13,28 +13,14 @@ pub fn get_private_keys(state: State<'_, Database>) -> Result<Vec<PrivateKey>, S
     let Ok(Some(state)) = state.read().map(|a| a.clone()) else {
         return Err("Error reading state".to_string());
     };
-    use crate::schema::private_keys::dsl::private_keys;
     log::debug!("Gettings private key ");
 
-    let results = private_keys
-        .select(PrivateKey::as_select())
+    let results = Key::private_keys()
         .load(&mut state.get().unwrap())
         .expect("Error loading private_keys");
     Ok(results)
 }
-#[tauri::command]
-pub fn remove_private_key(state: State<'_, Database>, key_id: &str) -> Result<(), String> {
-    let Ok(Some(state)) = state.read().map(|a| a.clone()) else {
-        return Err("Error reading state".to_string());
-    };
-    let del_key_id = key_id;
-    {
-        use crate::schema::private_keys::dsl::*;
-        log::debug!("Deleting private key {}", del_key_id);
-        diesel::delete(private_keys.filter(key_id.eq(del_key_id))).execute(&mut state.get().unwrap()).unwrap();
-    }
-    Ok(())
-}
+
 
 #[tauri::command]
 pub fn add_private_key(
@@ -70,7 +56,6 @@ pub fn add_private_key(
     .map_err(|a| a.to_string())?;
 
 
-    let public_key_id = &add_public_key(fstate, &format!("{nickname}"), &public_key,Some(true)).unwrap();
 
     let decrypt_id = hex::encode(key.key_id());
 
@@ -79,15 +64,19 @@ pub fn add_private_key(
         nickname,
         metadata: None,
         private_key,
-        public_key_id,
+        public_key: &public_key,
        
     };
 
-    let key: PrivateKey = diesel::insert_into(crate::schema::private_keys::table)
+    let key: PrivateKey = diesel::insert_into(crate::schema::keys::table)
         .values(&new_key)
         .returning(PrivateKey::as_returning())
-        .get_result(&mut state.get().unwrap())
-        .expect("Error saving new private key");
+        .get_result(&mut state.get().unwrap()).map_err(|err| {
+            log::error!("Error inserting public key: {}", err);
+            "Failed to insert public key".to_string()
+        })?;
+    log::debug!("Added public key with ID: {}", key.key_id);
+
 
     Ok(key.key_id)
 }

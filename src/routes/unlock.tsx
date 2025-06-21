@@ -38,7 +38,7 @@ export default function UnlockPage() {
     }
     
   return (
-    <section className=" flex flex-col justify-center items-center h-screen gap-2">
+    <section className=" bg-background  flex flex-col justify-center items-center h-screen gap-2">
     <img width={150}src="/static/blackbearlogo-clear.png"/>
     <Input className="w-min" onKeyDown={clickPress} onChange={(e)=> {setPassword(e.target.value)}}  type="password" placeholder="Password" />
     <Button disabled={unlocking} onClick={()=> {

@@ -1,5 +1,5 @@
 use crate::db::Database;
-use crate::models::{NewPublicKey, PublicKey};
+use crate::models::{Key, NewPublicKey, Key as PublicKey};
 use diesel::prelude::*;
 use pgp::{types::PublicKeyTrait as _, Deserializable, SignedPublicKey};
 use tauri::State;
@@ -9,25 +9,24 @@ pub fn get_public_keys(state: State<'_, Database>) -> Result<Vec<PublicKey>, Str
     let Ok(Some(state)) = state.read().map(|a| a.clone()) else {
         return Err("Error reading state".to_string());
     };
-    use crate::schema::public_keys::dsl::public_keys;
+   
     log::debug!("Getting public keys ");
 
-    let results = public_keys
-        .select(PublicKey::as_select())
+    let results = Key::public_keys()
         .load(&mut state.get().unwrap())
         .expect("Error loading public_keys");
     Ok(results)
 }
 #[tauri::command]
-pub fn remove_public_key(state: State<'_, Database>, key_id: &str) -> Result<(), String> {
+pub fn remove_key(state: State<'_, Database>, key_id: &str) -> Result<(), String> {
     let Ok(Some(state)) = state.read().map(|a| a.clone()) else {
         return Err("Error reading state".to_string());
     };
     let del_key_id = key_id;
     {
-    use crate::schema::public_keys::dsl::*;
-    log::debug!("Deleting public key {}", del_key_id);
-    let id = diesel::delete(public_keys.filter(key_id.eq(del_key_id).and(is_me.eq(false)))).execute(&mut state.get().unwrap()).unwrap();
+    use crate::schema::keys::dsl::*;
+    log::debug!("Deleting key {}", del_key_id);
+    let id = diesel::delete(keys.filter(key_id.eq(del_key_id).and(is_me.eq(false)))).execute(&mut state.get().unwrap()).unwrap();
     if (id ==0){
         return Err("Either failed to find key or attempted to delete a private key's public key".to_string());
     }
@@ -69,11 +68,14 @@ pub fn add_public_key(
         key_id: &decrypt_id,
     };
 
-    let key: PublicKey = diesel::insert_into(crate::schema::public_keys::table)
+    let key: Key = diesel::insert_into(crate::schema::keys::table)
         .values(&new_key)
         .returning(PublicKey::as_returning())
-        .get_result(&mut state.get().unwrap())
-        .expect("Error saving new public key");
+        .get_result(&mut state.get().unwrap()).map_err(|err| {
+            log::error!("Error inserting public key: {}", err);
+            "Failed to insert public key".to_string()
+        })?;
+    log::debug!("Added public key with ID: {}", key.key_id);
 
     Ok(key.key_id)
 }

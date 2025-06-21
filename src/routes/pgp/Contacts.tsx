@@ -1,11 +1,9 @@
 import { Header } from "@/components/header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { usePrivateKeys,usePublicKeys } from "@/hooks/use-keys";
 import { CopyIcon, PlusCircleIcon, Trash, UserCircle } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { RemovePrivateKey, RemovePublicKey, SavePublicKey } from "@/lib/api/pgp";
-import {  SavePrivateKey } from "@/lib/api/pgp";
+
 import { useState } from "react";
 import {
   Dialog,
@@ -18,18 +16,20 @@ import {
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
+import {  RemovePublicKey, SavePublicKey } from "@/lib/api/pgp";
+
+import { usePublicKeys } from "@/hooks/use-keys";
+import { Identity } from "@/components/organisms/Identity";
 
 
 export default function Contacts() {
-  const [publicKeys,reloadPub] = usePublicKeys();
+  const [publicKeys,reloadPub,loading] = usePublicKeys();
 
   return (
-    <section>
-      <Header />
-      
-      <ScrollArea className="container h-[calc(100vh-100px)] pr-4">
-        {publicKeys.length === 0 ? (
+    <div>
+
+      <ScrollArea className="container h-[calc(100vh-100px)] px-4">
+        {publicKeys.length === 0  && !loading? (
           <div className="flex flex-col items-center justify-center h-40 text-muted-foreground">
             <UserCircle size={40} className="mb-2" />
             <p>No Contacts found</p>
@@ -37,34 +37,8 @@ export default function Contacts() {
         ) : (
           <div className="space-y-4">
             {publicKeys.map((key) => (
-              <Card key={key.nickname} className="group">
-                <CardContent className="flex items-center justify-between p-4">
-                  <div className="flex items-center gap-3">
-                    <UserCircle className="text-muted-foreground" />
-                    <span className="font-medium ">{key.nickname} </span>
-                  </div>
-                   <span className="flex justify-center items-center gap-3 h-8">
-                      {key.is_me &&<Badge variant="outline">Identity</Badge>} 
-                      <Button
-                      variant="ghost"
-                      size="icon"
-                      className="hidden group-hover:flex transition-opacity"
-                      onClick={() => {navigator.clipboard.writeText(key.public_key)}}
-                      >
-                        <CopyIcon className="h-4 w-4 " />
-                      </Button>
-
-                { !key.is_me && <Button
-                    variant="ghost"
-                    size="icon"
-                    className="opacity-0 group-hover:opacity-100 transition-opacity"
-                    onClick={() => {RemovePublicKey(key.key_id).then(()=>{reloadPub()})}}
-                  >
-                    <Trash className="h-4 w-4 text-destructive" />
-                  </Button>}
-                  </span>
-                </CardContent>
-              </Card>
+              <Identity Key={key} onDelete={() => {RemovePublicKey(key.key_id).then(()=>{reloadPub()});}}/>
+             
             ))}
           </div>
         )}
@@ -72,7 +46,7 @@ export default function Contacts() {
       <AddContact/>
 
       
-    </section>
+    </div>
   );
 }
 

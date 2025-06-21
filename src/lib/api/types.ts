@@ -3,22 +3,14 @@ export interface GeneratePGPKeysResponse {
     private_key: string;
 }
 
-
-export interface PrivateKey {
-    key_id: string,
-    nickname: string,
-    metadata?: string,
-    private_key: string,
-    public_key_id: string,
-    created_at: Date,
-}
-
-export interface PublicKey{
+export interface Key{
     key_id: string,
     nickname: string,
     metadata?: string,
     is_me: boolean,
+    private_key?: string,
     public_key: string,
-    created_at: Date
+    created_at: Date,
+   
 }
 

@@ -1,4 +1,4 @@
-import Layout from "./Layout";
+import Layout from "@/layouts/MainLayout";
 import HomePage from "@/routes/HomePage";
 import { Navigate, Route, Routes } from "react-router";
 import Generate from "./routes/pgp/Generate";
@@ -7,15 +7,17 @@ import UnlockPage from "./routes/unlock";
 import Identities from "./routes/pgp/Identities";
 import Contacts from "./routes/pgp/Contacts";
 import Wallet from "./routes/monero/wallet";
+import { DashLayout } from "./layouts/DashLayout";
 
 
 
 function App() {
   return (
-      <Routes>
+    <Routes >
+      <Route element={<Layout />}>
 
         <Route path="unlock" element={<UnlockPage />} />
-        <Route path="/" element={<Layout />}>
+        <Route path="/" element={<DashLayout />}>
           <Route index element={<HomePage />} />
           <Route path="pgp">
             <Route path="generate" element={<Generate />} />
@@ -31,8 +33,8 @@ function App() {
                 routes for. */}
           <Route path="*" element={<NoMatch />} />
         </Route>
-      </Routes>
-      
+      </Route>
+    </Routes>
   );
 }
 
