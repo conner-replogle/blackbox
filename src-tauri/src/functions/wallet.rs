@@ -1,4 +1,4 @@
-use crate::monero::{MoneroWallet,connect_to_rpc};
+use crate::monero::{connect_to_rpc, MoneroWallet};
 use monero_rpc::JsonTransaction;
 use tauri::async_runtime::spawn_blocking;
 use tauri::State;
@@ -27,12 +27,11 @@ pub async fn open_rpc(
     Ok(true)
 }
 
-
 #[tauri::command]
 pub async fn test_rpc(state: State<'_, MoneroWallet>) -> Result<(), String> {
     log::debug!("Testing");
     let out = state.read().await;
-    let Some(rpc_client) = out.as_ref() else{
+    let Some(rpc_client) = out.as_ref() else {
         return Err("Not Connected".to_string());
     };
     let tx_id = "7c50844eced8ab78a8f26a126fbc1f731134e0ae3e6f9ba0f205f98c1426ff60".to_string();
@@ -42,18 +41,15 @@ pub async fn test_rpc(state: State<'_, MoneroWallet>) -> Result<(), String> {
     let tx = daemon_rpc_client
         .get_transactions(vec![fixed_hash.into()], Some(true), Some(true))
         .await;
-       log::debug!("tx {:?}", tx);
+    log::debug!("tx {:?}", tx);
+
     log::debug!(
         "unlock time: {:?}",
         serde_json::from_str::<JsonTransaction>(&tx.unwrap().txs_as_json.unwrap()[0])
     );
 
-
-
     Ok(())
 }
-
-
 
 #[tauri::command]
 pub async fn close_rpc(state: State<'_, MoneroWallet>) -> Result<(), String> {
@@ -63,4 +59,3 @@ pub async fn close_rpc(state: State<'_, MoneroWallet>) -> Result<(), String> {
 
     Ok(())
 }
-

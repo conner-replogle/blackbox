@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { ClipboardIcon } from "lucide-react";
 import { Button } from "../ui/button";
-export function TextAreaWithCopy(props:React.ComponentProps<"textarea">) {
+export function TextAreaWithCopy(props: React.ComponentProps<"textarea">) {
   const [value, setValue] = useState("");
 
   const handleCopy = () => {
@@ -12,13 +12,13 @@ export function TextAreaWithCopy(props:React.ComponentProps<"textarea">) {
     );
   };
   useEffect(() => {
-    setValue(props.value ? props.value as string: value)
-  },[props]);
+    setValue(props.value ? props.value as string : value)
+  }, [props]);
 
   return (
-    <div className={"relative " +props.className}>
+    <div className={"relative block " + props.className}>
       <Textarea
-        
+
         placeholder="Type your message here."
         value={props.value || value}
         onChange={(e) => {
@@ -30,9 +30,9 @@ export function TextAreaWithCopy(props:React.ComponentProps<"textarea">) {
         className="w-full p-3"
         {...props}
       />
-      
+
       <Button
-      className="absolute top-1 right-1"
+        className="absolute top-1 right-1"
         onClick={handleCopy}
         variant={"ghost"}
         size={"icon"}
